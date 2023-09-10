@@ -9,8 +9,6 @@ const server = Bun.serve({
   },
 });
 
-
-
 function Route(request: Request){
     const url = new URL(request.url);
     console.log(url);
