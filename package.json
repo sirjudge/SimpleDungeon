@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "start":"bun run router.ts"
+    "start":"bun run startUp.ts"
   },
   "devDependencies": {
     "bun-types": "latest"
