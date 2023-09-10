@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title> New Game </title>
+        <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+    </head>
+    <body>
+        <div id="newGame">
+            <h1>New Game</h1>
+            <form hx-post="/newgame" hx-target="#game">
+                <input type="text" name="gameName" placeholder="Name" required>
+                <input type="submit" value="Create">
+            </form>
+        </div>
+        <div id="loadGame">
+            <table id="selectTable">
+                <tbody>
+                    <tr>
+                        <th>Game Name</th>
+                        <th>Game ID</th>
+                        <th>Load</th>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
