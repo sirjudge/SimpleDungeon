@@ -6,11 +6,16 @@
     <body>
         <div id="newGame">
             <h1>New Game</h1>
-            <form hx-post="/newgame" hx-target="#game">
+            <form hx-post="/createGame" hx-target="#GameWindow" hx-swap="innerHTML" >
+                Enter Game Title
+                <br/>
                 <input type="text" name="gameName" placeholder="Name" required>
-                <input type="submit" value="Create">
+                <br/>
+                <button type="submit">Create</button>
             </form>
         </div>
+        <br/>
+        <br/>
         <div id="loadGame">
             <table id="selectTable">
                 <tbody>
@@ -21,5 +26,6 @@
                 </tbody>
             </table>
         </div>
+        <div id="GameWindow"></div>
     </body>
 </html>
