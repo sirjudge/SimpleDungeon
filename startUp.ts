@@ -1,6 +1,8 @@
 import { SessionManager } from "./backend/SessionManager";
 import GameMaster from "./backend/GameCreator";
-import { Server } from "tls";
+import { deserialize, serialize } from "bun:jsc";
+import { GameOptions } from "./models/gameOptions";
+
 
 const server = Bun.serve({
   port: 3000,
@@ -20,11 +22,8 @@ function printRequest(request: Request){
     console.log("body:", request.body);
 }
 
-function printServerDetails(server: Server){
-    console.log("hostname:", server.hostname);
-}
-
 function Route(request: Request): Response{
+    //printRequest(request);
     const url = new URL(request.url);
     if (request.method == "GET"){
         switch (url.pathname){
@@ -43,14 +42,16 @@ function Route(request: Request): Response{
     else if (request.method == "POST"){
         switch(url.pathname){
             case "/createGame":
+                const gameOptions = deserialize(request.body as GameOptions)
                 const session = SessionManager.GetSession(request);
                 const gameMaster = new GameMaster();
                 gameMaster.CreateGame("Test Game");
-                return new Response("Game Created", { status: 200 });
+                return new Response("<p>GameCreated</p>", {status: 200});
             default:
                 return new Response("404 Not Found", { status: 404 });
         }
     }
     else return new Response("404 Not Found", { status: 404 });
 }
+
 
