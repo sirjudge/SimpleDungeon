@@ -1,3 +1,5 @@
+import Session from "../models/session";
+
 export class SessionManager {
     static CreateNewSession(request: Request) {
         return new Session(request);
@@ -10,13 +12,3 @@ export class SessionManager {
     }
 }
 
-class Session{
-    private request: Request;
-    private gameId: number;
-    private gameName: string;
-    public constructor(request: Request, gameId: number = 0, gameName: string = ""){
-        this.request = request;
-        this.gameId = gameId;
-        this.gameName = gameName;
-    }
-}
