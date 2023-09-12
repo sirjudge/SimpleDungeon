@@ -2,28 +2,20 @@ import { SessionManager } from "./backend/SessionManager";
 import GameMaster from "./backend/GameCreator";
 import { deserialize, serialize } from "bun:jsc";
 import { GameOptions } from "./models/gameOptions";
+import { request } from "http";
 
 
-const server = Bun.serve({
+const server = Bun.serve( {
   port: 3000,
-  fetch(request) {
-    console.log("path:" + request.url + " method:" + request.method);
-    return Route(request);
+  async fetch(request) {
+      return Route(request);
   },
 });
 
 
 console.log("server started:", server.hostname + ":" + server.port);
 
-function printRequest(request: Request){
-    console.log("url:", request.url);
-    console.log("method:", request.method);
-    console.log("headers:", request.headers);
-    console.log("body:", request.body);
-}
-
-function Route(request: Request): Response{
-    //printRequest(request);
+async function Route(request: Request): Promise<Response>{
     const url = new URL(request.url);
     if (request.method == "GET"){
         switch (url.pathname){
@@ -42,16 +34,18 @@ function Route(request: Request): Response{
     else if (request.method == "POST"){
         switch(url.pathname){
             case "/createGame":
-                const gameOptions = deserialize(request.body as GameOptions)
-                const session = SessionManager.GetSession(request);
-                const gameMaster = new GameMaster();
-                gameMaster.CreateGame("Test Game");
-                return new Response("<p>GameCreated</p>", {status: 200});
+                const formDataPromise = request.formData();
+                var gameOptions = new GameOptions(0,"");
+                await formDataPromise.then((formData) => { 
+                    const gameName = formData.get("gameName");
+                    const gameId = formData.get("gameId");
+                    gameOptions = new GameOptions(Number(gameId), String(gameName));
+                });
+                return new Response("<ul><li>GameName:" + gameOptions.GetGameName() + "</li></ul>", {status: 200});
             default:
                 return new Response("404 Not Found", { status: 404 });
         }
     }
     else return new Response("404 Not Found", { status: 404 });
 }
-
 

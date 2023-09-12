@@ -2,11 +2,11 @@ export class GameOptions {
     private gameName: string;
     private gameId: number;
 
-    constructor() {
-        this.gameName = "";
-        this.gameId = 0;
+    constructor(gameId: number, gameName: string) {
+        this.gameId = gameId;
+        this.gameName = gameName;
     }
-   
+
     public SetGameId(gameId: number) {
         this.gameId = gameId;
     }

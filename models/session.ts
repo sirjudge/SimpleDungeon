@@ -1,17 +1,20 @@
+import { GameOptions } from "./gameOptions";
+
 export default class Session{
     private request: Request;
-    private gameId: number;
-    private gameName: string;
+    private gameOptions: GameOptions;
+
     public constructor(request: Request, gameId: number = 0, gameName: string = ""){
         this.request = request;
-        this.gameId = gameId;
-        this.gameName = gameName;
+        this.gameOptions = new GameOptions(gameId, gameName);
     }
 
-    public GetGameId(){
-        return this.gameId;
+    public GetGame(){
+        return this.gameOptions;
     }
-    public GetGameName(){
-        return this.gameName;
+
+    public GetRequest(){
+        return this.request;
     }
+        
 }
