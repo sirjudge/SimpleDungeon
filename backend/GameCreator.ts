@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import { GameOptions } from "../models/gameOptions";
 
 export default class GameMaster{
     private database: Database;
@@ -6,8 +7,10 @@ export default class GameMaster{
         this.database = new Database("mydb.sqlite", { create: true });
     }
 
-    public async CreateGame(gameName: string){
-        
+    public async CreateGame(gameOptions : GameOptions){
+        const query = this.database.query(`insert into games (gameId, gameName) values (?, ?)`, gameOptions.GetGameId(), gameOptions.GetGameName());
+        const returnValues = query.values();
+        console.log(returnValues);
     }
 
     public async GetGame(gameId: number){
