@@ -41,7 +41,8 @@ async function Route(request: Request): Promise<Response>{
                     const gameId = formData.get("gameId");
                     gameOptions = new GameOptions(Number(gameId), String(gameName));
                 });
-                return new Response("<ul><li>GameName:" + gameOptions.GetGameName() + "</li></ul>", {status: 200});
+                const returnHtml = "<ul><li>GameName:" + gameOptions.GetGameName() + "</li></ul>";
+                return new Response(returnHtml, {status: 200});
             default:
                 return new Response("404 Not Found", { status: 404 });
         }
