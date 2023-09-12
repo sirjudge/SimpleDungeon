@@ -6,7 +6,7 @@
     <body>
         <div id="newGame">
             <h1>New Game</h1>
-            <form hx-post="/createGame" hx-target="#GameWindow" hx-swap="innerHTML" >
+            <form hx-post="/createGame" hx-target="#GameWindow" hx-swap="afterend" >
                 Enter Game Title
                 <br/>
                 <input type="text" name="gameName" placeholder="Insert Name Here" required/>
