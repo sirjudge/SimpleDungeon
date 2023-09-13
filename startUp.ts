@@ -1,8 +1,6 @@
-import { SessionManager } from "./backend/SessionManager";
 import GameMaster from "./backend/GameCreator";
-import { deserialize, serialize } from "bun:jsc";
 import { GameOptions } from "./models/gameOptions";
-import { request } from "http";
+import { serialize } from "bun:jsc";
 
 
 const server = Bun.serve( {
@@ -17,6 +15,8 @@ console.log("server started:", server.hostname + ":" + server.port);
 
 async function Route(request: Request): Promise<Response>{
     const url = new URL(request.url);
+    const gameMaster = new GameMaster();
+    let games = [];
     if (request.method == "GET"){
         switch (url.pathname){
             case "/": 
@@ -27,6 +27,22 @@ async function Route(request: Request): Promise<Response>{
                 return new Response(Bun.file(import.meta.dir + "/frontend/pages/connectToGame.html"));
             case "/about":
                 return new Response(Bun.file(import.meta.dir + "/frontend/pages/about.html"));
+            case "/GetGame":
+                const gameId = url.searchParams.get("gameId");
+                const gameOptions = await gameMaster.GetGame(Number(gameId));
+                const generatedHtml = '<ul><li id="' + gameOptions.GetGameId() + '">GameName:' + gameOptions.GetGameName() + "</li></ul>";
+                const serializedGameOptions = serialize(gameOptions);
+                return new Response(serializedGameOptions, {status: 200});
+            case "/GetGamesHtml":
+                games = await gameMaster.GetAllGames();
+                var returnHtml = "";
+                for (let i = 0; i < games.length; i++){
+                    returnHtml += '<ul><li id="' + games[i].GetGameId() + '">GameId:' + games[i].GetGameId() + 'GameName:' + games[i].GetGameName() + "</li></ul>";
+                }
+                return new Response(returnHtml, {status: 200});
+            case "/GetGames":
+                games = await gameMaster.GetAllGames();
+                return new Response(JSON.stringify(games), {status: 200});
             default:
                 return new Response("404 Not Found", { status: 404 });
         }
@@ -35,16 +51,12 @@ async function Route(request: Request): Promise<Response>{
         switch(url.pathname){
             case "/createGame":
                 const formDataPromise = request.formData();
-                var gameOptions = new GameOptions(0,"");
+                var gameName = "";
                 await formDataPromise.then((formData) => { 
-                    const gameName = formData.get("gameName");
-                    const gameId = formData.get("gameId");
-                    gameOptions = new GameOptions(Number(gameId), String(gameName));
+                    gameName = formData.get("gameName") as string;
                 });
-                
-                const gameMaster = new GameMaster();
-                await gameMaster.CreateGame(gameOptions);
-                const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">GameName:' + gameOptions.GetGameName() + "</li></ul>";
+                const gameOptions = await gameMaster.CreateGame(gameName);
+                const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">GameId:' + gameOptions.GetGameId() + 'GameName:' + gameOptions.GetGameName() + "</li></ul>";
                 return new Response(returnHtml, {status: 200});
             default:
                 return new Response("404 Not Found", { status: 404 });

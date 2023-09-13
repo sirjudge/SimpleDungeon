@@ -1,7 +1,8 @@
 <html>
     <head>
-        <title> New Game </title>
+        <title> Launcher </title>
         <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+        <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
     </head>
     <body>
         <div id="newGame">
@@ -18,12 +19,9 @@
         <br/>
         <br/>
         <div id="loadGame">
+            <button hx-get="/GetGamesHtml" hx-target="#selectTable" hx-swap="innerHTML">View Games</button>
             <table id="selectTable">
-                <tbody>
-                    <tr>
-                        <th>Game Name</th>
-                        <th>Game ID</th>
-                        <th>Load</th>
+                <tbody id="ExistingGameBody">
                 </tbody>
             </table>
         </div>
