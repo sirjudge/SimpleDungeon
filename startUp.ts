@@ -35,11 +35,13 @@ async function Route(request: Request): Promise<Response>{
                 return new Response(serializedGameOptions, {status: 200});
             case "/GetGamesHtml":
                 games = await gameMaster.GetAllGames();
-                var returnHtml = "";
+                var returnHtml = "<ul>";
                 for (let i = 0; i < games.length; i++){
-                    returnHtml += '<ul><li id="' + games[i].GetGameId() + '">GameId:' + games[i].GetGameId() + 'GameName:' + games[i].GetGameName() + "</li></ul>";
+                    returnHtml += '<li id="' + games[i].GetGameId() + '">' + 
+                    "GameId:" + games[i].GetGameId() + "GameName:"+ games[i].GetGameName() + 
+                    "</li>";
                 }
-                return new Response(returnHtml, {status: 200});
+                return new Response(returnHtml+"</ul>", {status: 200});
             case "/GetGames":
                 games = await gameMaster.GetAllGames();
                 return new Response(JSON.stringify(games), {status: 200});

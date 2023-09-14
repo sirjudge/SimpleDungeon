@@ -1,15 +1,16 @@
 # simpledugneon
 ## a simple online TTRPG written in JavaScript and HTMX served with a side of Bun
 
-To install dependencies:
-```bash
-bun install
-```
+### Requirements
+- Install [Bun Runtime](https://bun.sh)
 
-To run:
-```bash
-bun run index.ts
-```
+### Installation + running 
+- To install dependencies: 
+```bash 
+bun install 
+``` 
 
-This project was created using `bun init` in bun v1.0.0. 
-[Bun](https://bun.sh) is a fast all-in-one JavaScript runtime, bundler, transpiler, and package manager
+- To run:
+```bash
+bun run start 
+```
