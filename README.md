@@ -14,3 +14,8 @@ bun install
 ```bash
 bun run start 
 ```
+
+- To run unit tests
+```bash
+bun test
+```
