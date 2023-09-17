@@ -11,13 +11,13 @@ export default class Router{
     if (request.method == "GET"){
         switch (url.pathname){
             case "/": 
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/home.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
             case "/launchGame":
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/launchGame.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/launchGame.html"));
             case "/connectToGame":
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/connectToGame.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/connectToGame.html"));
             case "/about":
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/about.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/about.html"));
             case "/GetGame":
                 const gameId = url.searchParams.get("gameId");
                 const gameOptions = await gameMaster.GetGame(Number(gameId));
