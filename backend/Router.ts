@@ -72,7 +72,7 @@ export default class Router{
             var gameName = game.GetGameName();
             returnHtml += '<li id="' + game.GetGameId() + '">' + 
                 `Id:${gameId} Name:${gameName}` +
-                '<button hx-get"\\ClearGame?gameId=' + game.GetGameId() +'">delete</button>' +  
+                `<button hx-get"//ClearGame?gameId=${gameId}">delete</button>` +  
                 "</li>";
         });
         return returnHtml;
