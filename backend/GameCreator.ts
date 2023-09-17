@@ -8,6 +8,19 @@ export default class GameMaster{
         this.InitDatabase();
     }
 
+    public async ClearGame(gameId: number) : Promise<boolean>{
+        console.log("clearing game:" + gameId);
+        try{
+            const query = this.database.query(`delete from games where gameId = ${gameId}`);
+            query.run();
+            return true;
+        }
+        catch(exception){
+            console.log("Error clearing game: " + exception);
+            return false;
+        }
+    }
+
     public async CreateGame(gameName: string) : Promise<GameOptions>{
         var queryText = `insert into games (gameName) values ('${gameName}') RETURNING gameId`;
         console.log("QueryText:" + queryText);
