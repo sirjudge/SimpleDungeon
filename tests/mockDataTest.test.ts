@@ -1,5 +1,5 @@
 import { GameOptions } from "../models/gameOptions";
-
+import {expect, test} from "bun:test";
 
 function createGameOptions(): GameOptions[]{
     var gameOption1 = new GameOptions(1,"game1");
@@ -11,3 +11,16 @@ function createGameOptions(): GameOptions[]{
 }
 
 
+test("GameOptionsInitialization", () => {
+    var gameOptionsArray = createGameOptions();
+    expect(gameOptionsArray[0].GetGameId()).toEqual(1);
+    expect(gameOptionsArray[0].GetGameName()).toEqual("game1");
+    expect(gameOptionsArray[1].GetGameId()).toEqual(2);
+    expect(gameOptionsArray[1].GetGameName()).toEqual("game2");
+    expect(gameOptionsArray[2].GetGameId()).toEqual(3);
+    expect(gameOptionsArray[2].GetGameName()).toEqual("game3");
+    expect(gameOptionsArray[3].GetGameId()).toEqual(4);
+    expect(gameOptionsArray[3].GetGameName()).toEqual("game4");
+    expect(gameOptionsArray[4].GetGameId()).toEqual(5);
+    expect(gameOptionsArray[4].GetGameName()).toEqual("game5");
+});
