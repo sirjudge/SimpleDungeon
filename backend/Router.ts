@@ -49,9 +49,9 @@ export default class Router{
         games.forEach(game => {
             var gameId = game.GetGameId();
             var gameName = game.GetGameName();
-            returnHtml += '<li id="' + game.GetGameId() + '">' + 
+            returnHtml += '<li id="' + gameId + '">' + 
                 `Id:${gameId} Name:${gameName}` +
-                `<button hx-get"//ClearGame?gameId=${gameId}">delete</button>` +  
+                `<button hx-get\"\/ClearGame?gameId=${gameId.toString()}\">delete</button>` +  
                 "</li>";
         });
         return returnHtml;
