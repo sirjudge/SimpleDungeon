@@ -17,16 +17,12 @@
         </div>
         <br/>
         <br/>
-        <div id="loadGame">
+        <div id="ViewGames">
             <button hx-get="/GetGamesHtml" hx-target="#selectTable" hx-swap="innerHTML">View Games</button>
             <br/>
-            <table id="selectTable">
-                <tbody id="ExistingGameBody">
-                </tbody>
-            </table>
         </div>
         <div id="GameWindow">
-            
+            <div id="selectTable"></div>
         </div>
     </body>
 </html>

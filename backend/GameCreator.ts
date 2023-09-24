@@ -8,7 +8,7 @@ export default class GameMaster{
         this.InitDatabase();
     }
 
-    public async ClearGame(gameId: number) : Promise<boolean>{
+    public async DeleteGame(gameId: number) : Promise<boolean>{
         console.log("clearing game:" + gameId);
         try{
             const query = this.database.query(`delete from games where gameId = ${gameId}`);

@@ -9,15 +9,29 @@ export default class Router{
 
     public async Route(request: Request): Promise<Response>{
         this.LogRequest(request);
-        
         if (request.method == "GET")
             return await this.RouteGetRequest(request);
         else if (request.method == "POST")
             return this.RoutePostRequest(request);
+        else if (request.method== "DELETE"){
+            return this.RouteDeleteRequest(request);
+        }
         else
             return new Response("404 Not Found", { status: 404 });
     }
 
+    public async RouteDeleteRequest(request: Request): Promise<Response>{
+        const url = new URL(request.url);
+        const gameMaster = new GameMaster();
+        switch (url.pathname){
+            case "/DeleteGame":
+                const gameId = url.searchParams.get("gameId");
+                await gameMaster.DeleteGame(Number(gameId));
+                return new Response("Game deleted", {status: 200});
+            default:
+                return new Response("404 Not Found", { status: 404 });
+        }
+    }
 
     public async RouteGetRequest(request: Request): Promise<Response>{
         const url = new URL(request.url);
@@ -34,8 +48,8 @@ export default class Router{
                 return new Response(Bun.file(import.meta.dir + "/../frontend/pages/about.html"));
             case "/GetGamesHtml":
                 games = await gameMaster.GetAllGames();
-            var returnHtml = await this.BuildGameList(games);
-            return new Response(returnHtml+"</ul>", {status: 200});
+                var returnHtml = await this.BuildGameList(games);
+                return new Response(returnHtml, {status: 200});
             case "/GetGames":
                 games = await gameMaster.GetAllGames();
             return new Response(JSON.stringify(games), {status: 200});
@@ -45,13 +59,14 @@ export default class Router{
     }
 
     public async BuildGameList(games: GameOptions[]){
-        var returnHtml = "<ul>"; 
+        var returnHtml = ""; 
         games.forEach(game => {
             var gameId = game.GetGameId();
             var gameName = game.GetGameName();
             returnHtml += '<li id="' + gameId + '">' + 
                 `Id:${gameId} Name:${gameName}` +
-                `<button hx-get\"\/ClearGame?gameId=${gameId.toString()}\">delete</button>` +  
+                `<button hx-delete=\"\/DeleteGame?gameId=${gameId}">Delete</button>` +  
+                `<button hx-get=\"\/LaunchGame?gameId=${gameId}">Launch</button>` +  
                 "</li>";
         });
         return returnHtml;
@@ -70,10 +85,7 @@ export default class Router{
             const gameOptions = await gameMaster.CreateGame(gameName);
             const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
             return new Response(returnHtml, {status: 200});
-            case "/ClearGame":
-                const gameId = url.searchParams.get("gameId");
-            await gameMaster.ClearGame(Number(gameId));
-            return new Response("Game Cleared", {status: 200});
+            //case "/ClearGame":
         }
         return new Response("404 Not Found", { status: 404 });
     }
