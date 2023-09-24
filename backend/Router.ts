@@ -1,61 +1,100 @@
-import GameMaster from "./GameCreator";
 import { GameOptions } from "../models/gameOptions";
-import { serialize } from "bun:jsc";
+import GameMaster from "./GameCreator";
 
 export default class Router{
 
+    public LogRequest(request: Request): void{
+        console.log("Request: " + request.method + " " + request.url);
+    }
+
     public async Route(request: Request): Promise<Response>{
-    const url = new URL(request.url);
-    const gameMaster = new GameMaster();
-    let games = [];
-    if (request.method == "GET"){
+        this.LogRequest(request);
+        if (request.method == "GET")
+            return await this.RouteGetRequest(request);
+        else if (request.method == "POST")
+            return this.RoutePostRequest(request);
+        else if (request.method== "DELETE"){
+            return this.RouteDeleteRequest(request);
+        }
+        else
+            return new Response("404 Not Found", { status: 404 });
+    }
+
+    public async RouteDeleteRequest(request: Request): Promise<Response>{
+        const url = new URL(request.url);
+        const gameMaster = new GameMaster();
+        switch (url.pathname){
+            case "/DeleteGame":
+                const gameId = url.searchParams.get("gameId");
+                await gameMaster.DeleteGame(Number(gameId));
+                return new Response("Game deleted", {status: 200});
+            default:
+                return new Response("404 Not Found", { status: 404 });
+        }
+    }
+
+    public async RouteGetRequest(request: Request): Promise<Response>{
+        const url = new URL(request.url);
+        const gameMaster = new GameMaster();
+        let games = [];
         switch (url.pathname){
             case "/": 
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/home.html"));
-            case "/launchGame":
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/launchGame.html"));
-            case "/connectToGame":
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/connectToGame.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
             case "/about":
-                return new Response(Bun.file(import.meta.dir + "/frontend/pages/about.html"));
-            case "/GetGame":
-                const gameId = url.searchParams.get("gameId");
-                const gameOptions = await gameMaster.GetGame(Number(gameId));
-                const generatedHtml = '<ul><li id="' + gameOptions.GetGameId() + '">GameName:' + gameOptions.GetGameName() + "</li></ul>";
-                const serializedGameOptions = serialize(gameOptions);
-                return new Response(serializedGameOptions, {status: 200});
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/about.html"));
+            case "/launchGame":
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/launchGame.html"), {status: 200});
             case "/GetGamesHtml":
                 games = await gameMaster.GetAllGames();
-                var returnHtml = "<ul>";
-                for (let i = 0; i < games.length; i++){
-                    returnHtml += '<li id="' + games[i].GetGameId() + '">' + 
-                    "GameId:" + games[i].GetGameId() + "GameName:"+ games[i].GetGameName() + 
-                    "</li>";
-                }
-                return new Response(returnHtml+"</ul>", {status: 200});
+                var returnHtml = await this.BuildGameList(games);
+                return new Response(returnHtml, {status: 200});
             case "/GetGames":
                 games = await gameMaster.GetAllGames();
                 return new Response(JSON.stringify(games), {status: 200});
+
+            case "/GameEngine":
+                var response = new Response(Bun.file(import.meta.dir + "/../frontend/pages/GameEngine.html"));
+                return response;
+            case "/LaunchGameEngine":
+                const gameId = url.searchParams.get("gameId");
+                console.log("connecting to gameId");
+                var response = new Response("Connection established", {status: 200});
+                response.headers.set("HX-REDIRECT", "/GameEngine?gameId=" + gameId);
+                return response;
             default:
                 return new Response("404 Not Found", { status: 404 });
         }
     }
-    else if (request.method == "POST"){
+
+    public async BuildGameList(games: GameOptions[]){
+        var returnHtml = ""; 
+        games.forEach(game => {
+            var gameId = game.GetGameId();
+            var gameName = game.GetGameName();
+            returnHtml += '<li id="' + gameId + '">' + 
+                `Id:${gameId} Name:${gameName}` +
+                `<button hx-delete=\"\/DeleteGame?gameId=${gameId}">Delete</button>` +  
+                `<button hx-get=\"\/LaunchGameEngine?gameId=${gameId}">Launch</button>` +  
+                "</li>";
+        });
+        return returnHtml;
+    }
+   
+    public async RoutePostRequest(request: Request): Promise<Response>{
+        const url = new URL(request.url);
+        const gameMaster = new GameMaster();
         switch(url.pathname){
             case "/createGame":
                 const formDataPromise = request.formData();
-                var gameName = "";
-                await formDataPromise.then((formData) => { 
-                    gameName = formData.get("gameName") as string;
-                });
-                const gameOptions = await gameMaster.CreateGame(gameName);
-                const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">GameId:' + gameOptions.GetGameId() + 'GameName:' + gameOptions.GetGameName() + "</li></ul>";
-                return new Response(returnHtml, {status: 200});
-            default:
-                return new Response("404 Not Found", { status: 404 });
+            var gameName = "";
+            await formDataPromise.then((formData) => { 
+                gameName = formData.get("gameName") as string;
+            });
+            const gameOptions = await gameMaster.CreateGame(gameName);
+            const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
+            return new Response(returnHtml, {status: 200});
         }
+        return new Response("404 Not Found", { status: 404 });
     }
-    else return new Response("404 Not Found", { status: 404 });
-}
 }
 

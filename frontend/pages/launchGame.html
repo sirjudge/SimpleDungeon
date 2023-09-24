@@ -12,21 +12,17 @@
                 <br/>
                 <input type="text" name="gameName" placeholder="Insert Name Here" required/>
                 <br/>
-                <input type="hidden" name="gameID" value="1"/>
                 <button type="submit">Create</button>
             </form>
         </div>
         <br/>
         <br/>
-        <div id="loadGame">
+        <div id="ViewGames">
             <button hx-get="/GetGamesHtml" hx-target="#selectTable" hx-swap="innerHTML">View Games</button>
-            <table id="selectTable">
-                <tbody id="ExistingGameBody">
-                </tbody>
-            </table>
+            <br/>
         </div>
         <div id="GameWindow">
-            
+            <div id="selectTable"></div>
         </div>
     </body>
 </html>
