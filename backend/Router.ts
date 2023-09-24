@@ -40,19 +40,27 @@ export default class Router{
         switch (url.pathname){
             case "/": 
                 return new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
-            case "/launchGame":
-                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/launchGame.html"));
-            case "/connectToGame":
-                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/connectToGame.html"));
             case "/about":
                 return new Response(Bun.file(import.meta.dir + "/../frontend/pages/about.html"));
+            case "/launchGame":
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/launchGame.html"), {status: 200});
             case "/GetGamesHtml":
                 games = await gameMaster.GetAllGames();
                 var returnHtml = await this.BuildGameList(games);
                 return new Response(returnHtml, {status: 200});
             case "/GetGames":
                 games = await gameMaster.GetAllGames();
-            return new Response(JSON.stringify(games), {status: 200});
+                return new Response(JSON.stringify(games), {status: 200});
+
+            case "/GameEngine":
+                var response = new Response(Bun.file(import.meta.dir + "/../frontend/pages/GameEngine.html"));
+                return response;
+            case "/LaunchGameEngine":
+                const gameId = url.searchParams.get("gameId");
+                console.log("connecting to gameId");
+                var response = new Response("Connection established", {status: 200});
+                response.headers.set("HX-REDIRECT", "/GameEngine?gameId=" + gameId);
+                return response;
             default:
                 return new Response("404 Not Found", { status: 404 });
         }
@@ -66,7 +74,7 @@ export default class Router{
             returnHtml += '<li id="' + gameId + '">' + 
                 `Id:${gameId} Name:${gameName}` +
                 `<button hx-delete=\"\/DeleteGame?gameId=${gameId}">Delete</button>` +  
-                `<button hx-get=\"\/LaunchGame?gameId=${gameId}">Launch</button>` +  
+                `<button hx-get=\"\/LaunchGameEngine?gameId=${gameId}">Launch</button>` +  
                 "</li>";
         });
         return returnHtml;
@@ -85,7 +93,6 @@ export default class Router{
             const gameOptions = await gameMaster.CreateGame(gameName);
             const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
             return new Response(returnHtml, {status: 200});
-            //case "/ClearGame":
         }
         return new Response("404 Not Found", { status: 404 });
     }
