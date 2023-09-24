@@ -52,9 +52,10 @@ export default class GameMaster{
     }
 
     public async GetGame(gameId: number) : Promise<GameOptions>{
+        console.log("gameId: " + gameId);
         const query = this.database.query(`select gameId, gameName from games where gameId = ${gameId}`);
         const returnValues = query.values()[0];
-        if (returnValues.length > 0)
+        if (returnValues != null && returnValues.length > 0)
             return new GameOptions(returnValues[0] as number, returnValues[1] as string);
         else 
             return new GameOptions(0, "");
