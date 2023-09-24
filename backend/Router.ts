@@ -38,6 +38,12 @@ export default class Router{
         const url = new URL(request.url);
         const gameMaster = new GameMaster();
         let games = [];
+
+        // auto handle style resolution
+        // todo: do link sanitization here as well
+        if (url.pathname.split("/")[0] == "styles")
+            return new Response(Bun.file(import.meta.dir + "/../frontend/" + url.pathname));
+
         switch (url.pathname){
             case "/": 
                 return new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
