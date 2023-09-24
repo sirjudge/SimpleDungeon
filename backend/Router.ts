@@ -24,49 +24,48 @@ export default class Router{
     public async RouteDeleteRequest(request: Request): Promise<Response>{
         const url = new URL(request.url);
         const gameMaster = new GameMaster();
-        var response = new Response();
         switch (url.pathname){
             case "/DeleteGame":
                 const gameId = url.searchParams.get("gameId");
                 await gameMaster.DeleteGame(Number(gameId));
-                response = new Response("Game deleted", {status: 200});
+                return new Response("Game deleted", {status: 200});
+            default:
+                return new Response("404 Not Found", { status: 404 });
         }
-        return response;
     }
 
     public async RouteGetRequest(request: Request): Promise<Response>{
         const url = new URL(request.url);
         const gameMaster = new GameMaster();
         let games = [];
-        var response = new Response();
-
         switch (url.pathname){
             case "/": 
-                response = new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
             case "/about":
-                response = new Response(Bun.file(import.meta.dir + "/../frontend/pages/about.html"));
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/about.html"));
             case "/launchGame":
                 return new Response(Bun.file(import.meta.dir + "/../frontend/pages/launchGame.html"), {status: 200});
             case "/GetGamesHtml":
                 games = await gameMaster.GetAllGames();
                 var returnHtml = await this.BuildGameList(games);
-                response = new Response(returnHtml, {status: 200});
+                return new Response(returnHtml, {status: 200});
             case "/GetGames":
                 games = await gameMaster.GetAllGames();
-                response = new Response(JSON.stringify(games), {status: 200});
+                return new Response(JSON.stringify(games), {status: 200});
             case "/GameEngine":
-                var response = new Response(Bun.file(import.meta.dir + "/../frontend/pages/GameEngine.html"));
-                response = response;
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/GameEngine.html"));
             case "/LaunchGameEngine":
                 const gameId = url.searchParams.get("gameId");
                 var response = new Response("Connection established", {status: 200});
                 response.headers.set("HX-REDIRECT", "/GameEngine?gameId=" + gameId);
+                return response;
+            default:
+                return new Response("404 Not Found", { status: 404 });
         }
-        return response;
     }
 
     public async BuildGameList(games: GameOptions[]){
-        var returnHtml = ""; 
+        var returnHtml = `<div id="gameList"><ul>`;
         games.forEach(game => {
             var gameId = game.GetGameId();
             var gameName = game.GetGameName();
@@ -76,7 +75,7 @@ export default class Router{
                 `<button hx-get=\"\/LaunchGameEngine?gameId=${gameId}">Launch</button>` +  
                 "</li>";
         });
-        return returnHtml;
+        return returnHtml + "</ul></div>";
     }
    
     public async RoutePostRequest(request: Request): Promise<Response>{
@@ -85,15 +84,16 @@ export default class Router{
         switch(url.pathname){
             case "/createGame":
                 const formDataPromise = request.formData();
-            var gameName = "";
-            await formDataPromise.then((formData) => { 
-                gameName = formData.get("gameName") as string;
-            });
-            const gameOptions = await gameMaster.CreateGame(gameName);
-            const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
-            return new Response(returnHtml, {status: 200});
+                var gameName = "";
+                await formDataPromise.then((formData) => { 
+                    gameName = formData.get("gameName") as string;
+                });
+                const gameOptions = await gameMaster.CreateGame(gameName);
+                const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
+                return new Response(returnHtml, {status: 200});
+            default:
+                return new Response("404 Not Found", { status: 404 });
         }
-        return new Response("404 Not Found", { status: 404 });
     }
 }
 
