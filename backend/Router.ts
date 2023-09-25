@@ -1,7 +1,11 @@
 import { GameOptions } from "../models/gameOptions";
-import GameMaster from "./GameCreator";
+import GameMaster from "./GameMaster";
 
 export default class Router{
+
+    public Generate404(){
+        return new Response("404 Not Found, { status: 404 }");
+    }
 
     public LogRequest(request: Request): void{
         console.log("Request: " + request.method + " " + request.url);
@@ -17,7 +21,7 @@ export default class Router{
             case "DELETE":
                 return await this.RouteDeleteRequest(request);
             default:
-                return new Response("404 Not Found", { status: 404 });
+                return this.Generate404(); 
         }
     }
 
@@ -30,7 +34,7 @@ export default class Router{
                 await gameMaster.DeleteGame(Number(gameId));
                 return new Response("Game deleted", {status: 200});
             default:
-                return new Response("404 Not Found", { status: 404 });
+                return this.Generate404();
         }
     }
 
@@ -66,7 +70,7 @@ export default class Router{
                 response.headers.set("HX-REDIRECT", "/GameEngine?gameId=" + gameId);
                 return response;
             default:
-                return new Response("404 Not Found", { status: 404 });
+                return this.Generate404();
         }
     }
 
@@ -98,7 +102,7 @@ export default class Router{
                 const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
                 return new Response(returnHtml, {status: 200});
             default:
-                return new Response("404 Not Found", { status: 404 });
+                return this.Generate404();
         }
     }
 }
