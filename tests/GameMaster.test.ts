@@ -1,5 +1,5 @@
 import {expect, test} from "bun:test";
-import GameMaster from "../backend/GameCreator";
+import GameMaster from "../backend/GameMaster.ts";
 
 test("GameMaster CreateDB", async () => {
     const gameMaster = new GameMaster();

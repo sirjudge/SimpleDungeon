@@ -1,3 +1,4 @@
+import { GameOptions } from "../models/gameOptions";
 import Session from "../models/session";
 import Database from "bun:sqlite";
 
@@ -16,7 +17,7 @@ export class SessionManager {
             const tableQuery = this.database.query(checkIfTableExistsQuery);
             tableQuery.run();
             if (tableQuery.values().length == 0){
-                const createTableString = `create table Sessions ( SessionId integer primary key, UserGuid text not null, GameId integer not null)`;
+                const createTableString = `create table Sessions ( SessionId integer primary key, UserGuid text not null, GameId integer not null,SessionCreation, DateTimeStamp text not null)`;
                 const query = this.database.query(createTableString);
                 query.run();
             }
@@ -26,15 +27,19 @@ export class SessionManager {
         }
     }
 
-    static CreateNewSession(gameId : Number, gameName: string) : Session {
-    //public constructor(request: Request, gameId: number = 0, gameName: string = ""){
+    static CreateNewSession(gameId : number, gameName: string) : Session {
+        const gameOptions = new GameOptions(gameId, gameName);
         const session = new Session(gameId, gameName); 
+        //TODO: insert session into DB
+        return session;
     }
 
     static GetSession(request: Request) : Session{
+        //TODO: get session details from DB here
         const gameId = 1;
         const gameName = "Test Game";
-        return new Session(request, gameId, gameName);
+        const session = new Session(gameId, gameName);
+        return session;
     }
 }
 
