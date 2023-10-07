@@ -99,6 +99,7 @@ export default class Router{
                     gameName = formData.get("gameName") as string;
                 });
                 const gameOptions = await gameMaster.CreateGame(gameName);
+                console.log("gameOptions returnHtml");
                 const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
                 return new Response(returnHtml, {status: 200});
             default:

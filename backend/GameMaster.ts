@@ -5,7 +5,7 @@ export default class GameMaster{
     private database: Database;
 
     constructor(){
-        this.database = new Database("mydb.sqlite", { create: true });
+        this.database = new Database("DungeonDetails.sqlite", { create: true });
         this.InitDatabase();
     }
 
@@ -17,15 +17,17 @@ export default class GameMaster{
             return true;
         }
         catch(exception){
-            console.error(exception);
             return false;
         }
     }
 
     public async CreateGame(gameName: string) : Promise<GameOptions>{
+        //TODO: there is a bug here where it's duplicating a creation
+        console.log("creating a game: " + gameName);
         var queryText = `insert into games (gameName) values ('${gameName}') RETURNING gameId`;
         const query = this.database.query(queryText);
         try{
+            console.log("running query:{0}", queryText);
             query.run();
             var returnValues = query.values();
             if (returnValues.length > 0)
