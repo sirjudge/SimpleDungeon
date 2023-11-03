@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "bun build --compile startUp.ts",
-    "test": "jest",
+    "test": "bun test",
     "start":"bun run startup.ts"
   },
   "devDependencies": {
