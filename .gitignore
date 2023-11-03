@@ -1,3 +1,6 @@
+# Don't include the startup build file
+startup
+
 # don't include sqlite files
 *.sqlite
 

@@ -1,20 +1,30 @@
 import { GameOptions } from "./gameOptions";
 
 export default class Session{
-    private request: Request;
     private gameOptions: GameOptions;
+    private userGuid: string;
+    private DateTimeStamp: Date;
 
-    public constructor(request: Request, gameId: number = 0, gameName: string = ""){
-        this.request = request;
+     public constructor( gameId: number, gameName: string){
         this.gameOptions = new GameOptions(gameId, gameName);
+        this.userGuid = this.CreateUserGuid();
+        this.DateTimeStamp = new Date();
     }
 
-    public GetGame(){
+    public GetDateTimeStamp(){
+        return this.DateTimeStamp;
+    }
+    
+    public GetUserGuid(){
+        return this.userGuid;
+    }
+
+    public GetGameOptions(){
         return this.gameOptions;
     }
 
-    public GetRequest(){
-        return this.request;
+    public CreateUserGuid(){
+        let id = crypto.randomUUID();
+        return id.toString();
     }
-        
 }

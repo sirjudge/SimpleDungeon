@@ -1,7 +1,11 @@
 import { GameOptions } from "../models/gameOptions";
-import GameMaster from "./GameCreator";
+import GameMaster from "./GameMaster";
 
 export default class Router{
+
+    public Generate404(){
+        return new Response("404 Not Found, { status: 404 }");
+    }
 
     public LogRequest(request: Request): void{
         console.log("Request: " + request.method + " " + request.url);
@@ -9,15 +13,16 @@ export default class Router{
 
     public async Route(request: Request): Promise<Response>{
         this.LogRequest(request);
-        if (request.method == "GET")
-            return await this.RouteGetRequest(request);
-        else if (request.method == "POST")
-            return this.RoutePostRequest(request);
-        else if (request.method== "DELETE"){
-            return this.RouteDeleteRequest(request);
+        switch(request.method){
+            case "GET":
+                return await this.RouteGetRequest(request);
+            case "POST":
+                return await this.RoutePostRequest(request);
+            case "DELETE":
+                return await this.RouteDeleteRequest(request);
+            default:
+                return this.Generate404(); 
         }
-        else
-            return new Response("404 Not Found", { status: 404 });
     }
 
     public async RouteDeleteRequest(request: Request): Promise<Response>{
@@ -29,7 +34,7 @@ export default class Router{
                 await gameMaster.DeleteGame(Number(gameId));
                 return new Response("Game deleted", {status: 200});
             default:
-                return new Response("404 Not Found", { status: 404 });
+                return this.Generate404();
         }
     }
 
@@ -37,6 +42,12 @@ export default class Router{
         const url = new URL(request.url);
         const gameMaster = new GameMaster();
         let games = [];
+
+        // auto handle style resolution
+        // todo: do link sanitization here as well
+        if (url.pathname.split("/")[0] == "styles")
+            return new Response(Bun.file(import.meta.dir + "/../frontend/" + url.pathname));
+
         switch (url.pathname){
             case "/": 
                 return new Response(Bun.file(import.meta.dir + "/../frontend/pages/home.html"));
@@ -51,23 +62,20 @@ export default class Router{
             case "/GetGames":
                 games = await gameMaster.GetAllGames();
                 return new Response(JSON.stringify(games), {status: 200});
-
             case "/GameEngine":
-                var response = new Response(Bun.file(import.meta.dir + "/../frontend/pages/GameEngine.html"));
-                return response;
+                return new Response(Bun.file(import.meta.dir + "/../frontend/pages/GameEngine.html"));
             case "/LaunchGameEngine":
                 const gameId = url.searchParams.get("gameId");
-                console.log("connecting to gameId");
                 var response = new Response("Connection established", {status: 200});
                 response.headers.set("HX-REDIRECT", "/GameEngine?gameId=" + gameId);
                 return response;
             default:
-                return new Response("404 Not Found", { status: 404 });
+                return this.Generate404();
         }
     }
 
     public async BuildGameList(games: GameOptions[]){
-        var returnHtml = ""; 
+        var returnHtml = `<div id="gameList"><ul>`;
         games.forEach(game => {
             var gameId = game.GetGameId();
             var gameName = game.GetGameName();
@@ -77,7 +85,7 @@ export default class Router{
                 `<button hx-get=\"\/LaunchGameEngine?gameId=${gameId}">Launch</button>` +  
                 "</li>";
         });
-        return returnHtml;
+        return returnHtml + "</ul></div>";
     }
    
     public async RoutePostRequest(request: Request): Promise<Response>{
@@ -86,15 +94,17 @@ export default class Router{
         switch(url.pathname){
             case "/createGame":
                 const formDataPromise = request.formData();
-            var gameName = "";
-            await formDataPromise.then((formData) => { 
-                gameName = formData.get("gameName") as string;
-            });
-            const gameOptions = await gameMaster.CreateGame(gameName);
-            const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
-            return new Response(returnHtml, {status: 200});
+                var gameName = "";
+                await formDataPromise.then((formData) => { 
+                    gameName = formData.get("gameName") as string;
+                });
+                const gameOptions = await gameMaster.CreateGame(gameName);
+                console.log("gameOptions returnHtml");
+                const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
+                return new Response(returnHtml, {status: 200});
+            default:
+                return this.Generate404();
         }
-        return new Response("404 Not Found", { status: 404 });
     }
 }
 
