@@ -3,7 +3,6 @@ import Session from "../models/session";
 import Database from "bun:sqlite";
 
 export class SessionManager {
-
     private database: Database;
 
     constructor() {

@@ -3,9 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "bun build --compile startUp.ts",
     "test": "jest",
-    "start":"bun run startUp.ts"
+    "start":"bun run startup.ts"
   },
   "devDependencies": {
     "bun-types": "latest"

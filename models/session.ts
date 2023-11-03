@@ -5,7 +5,7 @@ export default class Session{
     private userGuid: string;
     private DateTimeStamp: Date;
 
-    public constructor( gameId: number, gameName: string){
+     public constructor( gameId: number, gameName: string){
         this.gameOptions = new GameOptions(gameId, gameName);
         this.userGuid = this.CreateUserGuid();
         this.DateTimeStamp = new Date();
