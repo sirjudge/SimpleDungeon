@@ -32,7 +32,7 @@ export class SessionManager {
         console.log("CreateNewSession() method called, gameId:", gameId, "gameName:", gameName);
         this.InitDatabase();
         const gameOptions = new GameOptions(gameId, gameName);
-        const session = new Session(gameId, gameName); 
+        const session = new Session(gameOptions); 
 
         //TODO: insert session into DB
         const insertSessionQuery = `insert into Sessions (UserGuid, GameId, SessionCreation, DateTimeStamp) values ('${session.UserGuid}', ${session.GameId}, '${session.SessionCreation}', '${session.DateTimeStamp}')`;
@@ -49,12 +49,13 @@ export class SessionManager {
         const result = query.values();
         if (result.length == 0){
             console.log("No session found for gameId: ", gameId);
-            return new Session(0,"");
+            return new Session(new GameOptions( 0, "" + gameId));
         } 
 
         //TODO: Change this from hard coded to extract whatever is in the db
         console.log("result", result);
-            return new Session(1,"hardcodedSessionChangeThisLater");
+        var gameOptions = new GameOptions(1,"hardcodedGameName");
+        return new Session(gameOptions);
         // const session = new Session(result[0].GameId, result[0].GameName);
     }
 }
