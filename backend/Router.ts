@@ -30,7 +30,6 @@ export default class Router{
     }
 
     private HandleSession(request : Request) : Session{
-
         var sessionManager = new SessionManager();
         var url = new URL(request.url);
         var gameIdString = url.searchParams.get("gameId"); 

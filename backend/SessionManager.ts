@@ -12,6 +12,7 @@ export class SessionManager {
             const checkIfTableExistsQuery = `select name from sqlite_master where type='table' and name='Sessions'`;
             const tableQuery = this.database.query(checkIfTableExistsQuery);
             tableQuery.run();
+            console.log("tableQuery.values()", tableQuery.values());
             if (tableQuery.values().length == 0){
                 const createTableString = `create table Sessions ( SessionId integer primary key, UserGuid text not null, GameId integer not null,SessionCreation, DateTimeStamp text not null)`;
                 const query = this.database.query(createTableString);
