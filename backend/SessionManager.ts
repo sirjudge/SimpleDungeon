@@ -6,12 +6,9 @@ export class SessionManager {
     private database: Database;
 
     constructor() {
-        this.InitDatabase();
-        this.database = new Database("sessionManager.sqlite", { create: true });
-    }
-
-    private InitDatabase() : void{
         try{
+            console.log("Initializing session manager");
+            this.database = new Database("sessionManager.sqlite", { create: true });
             const checkIfTableExistsQuery = `select name from sqlite_master where type='table' and name='Sessions'`;
             const tableQuery = this.database.query(checkIfTableExistsQuery);
             tableQuery.run();
@@ -26,16 +23,21 @@ export class SessionManager {
         }
     }
 
+  
+    public CreateNewSessionFromGameOption(gameOptions : GameOptions) : Session { 
+        return this.CreateNewSession( gameOptions.GetGameId(), gameOptions.GetGameName()); 
+    }
 
     // TODO: Probably need to add duplication check here before it goes to validate itself
     public CreateNewSession(gameId : number, gameName: string) : Session {
         console.log("CreateNewSession() method called, gameId:", gameId, "gameName:", gameName);
-        this.InitDatabase();
         const gameOptions = new GameOptions(gameId, gameName);
         const session = new Session(gameOptions); 
 
         //TODO: insert session into DB
-        const insertSessionQuery = `insert into Sessions (UserGuid, GameId, SessionCreation, DateTimeStamp) values ('${session.UserGuid}', ${session.GameId}, '${session.SessionCreation}', '${session.DateTimeStamp}')`;
+        const insertSessionQuery = 
+            `insert into Sessions (UserGuid, GameId, SessionCreation, DateTimeStamp)` + 
+            `values ('${session.UserGuid}', ${session.GameId}, '${session.SessionCreation}', '${session.DateTimeStamp}')`;
         const query = this.database.query(insertSessionQuery);
         query.run();
         return session;
@@ -43,7 +45,6 @@ export class SessionManager {
 
     public GetSession(gameId: number) : Session{
         console.log("GetSession() method called, gameId: ", gameId);
-        this.InitDatabase();
         const query = this.database.query(`select * from Sessions where GameId = ${gameId}`);
         query.run();
         const result = query.values();
