@@ -26,19 +26,36 @@ export class SessionManager {
         }
     }
 
-    static CreateNewSession(gameId : number, gameName: string) : Session {
+
+    // TODO: Probably need to add duplication check here before it goes to validate itself
+    public CreateNewSession(gameId : number, gameName: string) : Session {
+        console.log("CreateNewSession() method called, gameId:", gameId, "gameName:", gameName);
+        this.InitDatabase();
         const gameOptions = new GameOptions(gameId, gameName);
         const session = new Session(gameId, gameName); 
+
         //TODO: insert session into DB
+        const insertSessionQuery = `insert into Sessions (UserGuid, GameId, SessionCreation, DateTimeStamp) values ('${session.UserGuid}', ${session.GameId}, '${session.SessionCreation}', '${session.DateTimeStamp}')`;
+        const query = this.database.query(insertSessionQuery);
+        query.run();
         return session;
     }
 
-    static GetSession(request: Request) : Session{
-        //TODO: get session details from DB here
-        const gameId = 1;
-        const gameName = "Test Game";
-        const session = new Session(gameId, gameName);
-        return session;
+    public GetSession(gameId: number) : Session{
+        console.log("GetSession() method called, gameId: ", gameId);
+        this.InitDatabase();
+        const query = this.database.query(`select * from Sessions where GameId = ${gameId}`);
+        query.run();
+        const result = query.values();
+        if (result.length == 0){
+            console.log("No session found for gameId: ", gameId);
+            return new Session(0,"");
+        } 
+
+        //TODO: Change this from hard coded to extract whatever is in the db
+        console.log("result", result);
+            return new Session(1,"hardcodedSessionChangeThisLater");
+        // const session = new Session(result[0].GameId, result[0].GameName);
     }
 }
 

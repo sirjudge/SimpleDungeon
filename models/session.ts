@@ -1,16 +1,17 @@
 import { GameOptions } from "./gameOptions";
 
 export default class Session{
-    private gameOptions: GameOptions;
+    private GameOptions: GameOptions;
     private userGuid: string;
     private DateTimeStamp: Date;
 
-     public constructor( gameId: number, gameName: string){
-        this.gameOptions = new GameOptions(gameId, gameName);
+
+    public constructor(gameOptions: GameOptions){
+    
+        this.GameOptions = gameOptions;
         this.userGuid = this.CreateUserGuid();
         this.DateTimeStamp = new Date();
     }
-
     public GetDateTimeStamp(){
         return this.DateTimeStamp;
     }
@@ -20,7 +21,7 @@ export default class Session{
     }
 
     public GetGameOptions(){
-        return this.gameOptions;
+        return this.GameOptions;
     }
 
     public CreateUserGuid(){
