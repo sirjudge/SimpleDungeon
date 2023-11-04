@@ -56,8 +56,8 @@ export default class Router{
         switch (url.pathname){
             case "/DeleteGame":
                 const gameId = url.searchParams.get("gameId");
-            await gameMaster.DeleteGame(Number(gameId));
-            return new Response("Game deleted", {status: 200});
+                await gameMaster.DeleteGame(Number(gameId));
+                return new Response("Game deleted", {status: 200});
             default:
                 return this.Generate404();
         }
@@ -85,7 +85,7 @@ export default class Router{
                 console.log("GetGamesHtml called");
                 games = await gameMaster.GetAllGames();
             var returnHtml = await this.BuildGameList(games);
-            return new Response(returnHtml, {status: 200});
+                return new Response(returnHtml, {status: 200});
             case "/GetGames":
                 console.log("GetGames called");
                 games = await gameMaster.GetAllGames();
@@ -124,14 +124,13 @@ export default class Router{
         switch(url.pathname){
             case "/createGame":
                 const formDataPromise = request.formData();
-            var gameName = "";
-            await formDataPromise.then((formData) => { 
-                gameName = formData.get("gameName") as string;
-            });
-            const gameOptions = await gameMaster.CreateGame(gameName);
-            console.log("gameOptions returnHtml");
-            const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
-            return new Response(returnHtml, {status: 200});
+                var gameName = "";
+                await formDataPromise.then((formData) => { 
+                    gameName = formData.get("gameName") as string;
+                });
+                const gameOptions = await gameMaster.CreateGame(gameName);
+                const returnHtml = '<ul><li id="' + gameOptions.GetGameId() + '">Id:' + gameOptions.GetGameId() + 'Name:' + gameOptions.GetGameName() + "</li></ul>";
+                return new Response(returnHtml, {status: 200});
             default:
                 return this.Generate404();
         }
